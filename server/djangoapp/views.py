@@ -51,13 +51,13 @@ def registration(request):
 
     # Load JSON data from the request body
     data = json.loads(request.body)
-    username = date['userName']
+    username = data['userName']
     password = data['password']
     first_name = data['firstName']
     last_name = data['lastName']
     email = data['email']
-    username_exist = False
-    email_exist = False
+    username_exists = False
+    email_exists = False
     try:
         # Check if user already exists
         User.objects.get(username=username)
@@ -67,7 +67,7 @@ def registration(request):
         logger.debug(f"{username} is new user")
 
     # If it is a new user
-    if not username_exist:
+    if not username_exists:
         # Create user in auth_user table
         user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password, email=email)
         # Login the user and redirect to list page
