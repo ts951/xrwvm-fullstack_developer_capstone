@@ -15,12 +15,8 @@ from .populate import initiate
 
 from .models import CarMake, CarModel
 
-
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
-
-
-# Create your views here.
 
 # Create a `login_request` view to handle sign in request
 @csrf_exempt
@@ -90,19 +86,38 @@ def get_cars(request):
         cars.append({"CarModel": car_model.name, "CarMake": car_model.make.name})
     return JsonResponse({"CarModels":cars})
 
-# # Update the `get_dealerships` view to render the index page with
-# a list of dealerships
-# def get_dealerships(request):
-# ...
+#Update the `get_dealerships` render list of dealerships all by default, particular state if state is passed
+def get_dealerships(request, state="All"):
+    if(state == "All"):
+        endpoint = "/fetchDealers"
+    else:
+        endpoint = "/fetchDealers/"+state
+    dealerships = get_request(endpoint)
+    return JsonResponse({"status":200,"dealers":dealerships})
 
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
-# def get_dealer_reviews(request,dealer_id):
-# ...
+def get_dealer_reviews(request, dealer_id):
+    if (dealer_id):
+        endpoint = "/fetchReviews/dealer/" + str(dealder_id)
+        reviews = get_request(endpoint)
+        for review in reviews:
+            sentiment = analyze_review_sentiments(review['review'])
+            review['sentiment'] = sentiment
+        return JsonResponse({"status":200, "reviews": reviews})
+    else:
+        return JsonResponse({"status":400,"message": "No dealer with that id"})
+
+
 
 # Create a `get_dealer_details` view to render the dealer details
-# def get_dealer_details(request, dealer_id):
-# ...
+def get_dealer_details(request, dealer_id):
+    if (dealer_id):
+        endpoint = "/fetchDealer/" + str(dealer_id)
+        dealer = get_request(endpoint)
+        return JsonResponse({"status":200,"dealer":dealer})
+    else:
+        return JsonResponse({"status":400,"message": "No dealer with that id"})
 
 # Create a `add_review` view to submit a review
 # def add_review(request):
-# ...
+
