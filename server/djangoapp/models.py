@@ -14,20 +14,18 @@ class CarMake(models.Model):
 class CarModel(models.Model):
     make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    types = models.CharField(max_length=50, 
-        choices={
-            "SUV": "SUV",
-            "COUPE": "Coupe",
-            "CONVERTIBLE": "Convertible",
-            "MINIVAN": "Minivan",
-            "PICK-UP": "Pick-Up",
-            "SEDAN": "Sedan"}, 
-        default="SUV")
-    year = models.IntegerField(default=2023, 
-        validators=[
+    car_types = {
+        "SUV": "SUV",
+        "COUPE": "Coupe",
+        "CONVERTIBLE": "Convertible",
+        "MINIVAN": "Minivan",
+        "PICK-UP": "Pick-Up",
+        "SEDAN": "Sedan"}
+    types = models.CharField(max_length=50, choices=car_types, default="SUV")
+    validator_ranges = [
             MaxValueValidator(2023),
-            MinValueValidator(2015)
-        ])
+            MinValueValidator(2015)]
+    year = models.IntegerField(default=2023, validators=validator_ranges)
 
     def __str__(self):
         return self.name
