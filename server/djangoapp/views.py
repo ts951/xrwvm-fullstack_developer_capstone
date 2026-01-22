@@ -12,6 +12,7 @@ import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
 from .populate import initiate
+from .restapis import get_request, analyze_review_sentiments, post_review
 
 from .models import CarMake, CarModel
 
@@ -107,17 +108,22 @@ def get_dealer_reviews(request, dealer_id):
     else:
         return JsonResponse({"status":400,"message": "No dealer with that id"})
 
-
-
 # Create a `get_dealer_details` view to render the dealer details
 def get_dealer_details(request, dealer_id):
     if (dealer_id):
         endpoint = "/fetchDealer/" + str(dealer_id)
-        dealer = get_request(endpoint)
         return JsonResponse({"status":200,"dealer":dealer})
     else:
         return JsonResponse({"status":400,"message": "No dealer with that id"})
 
 # Create a `add_review` view to submit a review
-# def add_review(request):
-
+def add_review(request):
+    if( request.user.is_authenticated == True):
+        data = json.loads(request.body)
+        try:
+            response = post_reviews(data)
+            return JsonResponse({"status":200})
+        except:
+            return JsonResponse({"status":401,"message":"Error in attempting t post review"})
+    else:
+        return JsonResponse({"status":403,"message":"User unauthorised"})
