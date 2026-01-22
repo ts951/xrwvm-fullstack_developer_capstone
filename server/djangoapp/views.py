@@ -99,11 +99,11 @@ def get_dealerships(request, state="All"):
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
 def get_dealer_reviews(request, dealer_id):
     if (dealer_id):
-        endpoint = "/fetchReviews/dealer/" + str(dealder_id)
+        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
         reviews = get_request(endpoint)
         for review in reviews:
-            sentiment = analyze_review_sentiments(review['review'])
-            review['sentiment'] = sentiment
+            sentiment_response = analyze_review_sentiments(review['review'])
+            review['sentiment'] = sentiment_response['sentiment']
         return JsonResponse({"status":200, "reviews": reviews})
     else:
         return JsonResponse({"status":400,"message": "No dealer with that id"})
@@ -112,18 +112,19 @@ def get_dealer_reviews(request, dealer_id):
 def get_dealer_details(request, dealer_id):
     if (dealer_id):
         endpoint = "/fetchDealer/" + str(dealer_id)
+        dealer = get_request(endpoint)
         return JsonResponse({"status":200,"dealer":dealer})
     else:
         return JsonResponse({"status":400,"message": "No dealer with that id"})
 
 # Create a `add_review` view to submit a review
 def add_review(request):
-    if( request.user.is_authenticated == True):
+    if(request.user.is_authenticated == True):
         data = json.loads(request.body)
         try:
-            response = post_reviews(data)
+            response = post_review(data)
             return JsonResponse({"status":200})
         except:
-            return JsonResponse({"status":401,"message":"Error in attempting t post review"})
+            return JsonResponse({"status":401,"message":"Error in attempting to post review"})
     else:
         return JsonResponse({"status":403,"message":"User unauthorised"})
